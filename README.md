@@ -1,5 +1,27 @@
 # Subtitle Shop Backend
 
+## 20240209 Current commit
+
+### Running locally
+
+- In one terminal window:
+
+`celery -A config worker --loglevel=debug`
+
+- In another:
+
+`python manage.py runserver 0.0.0.0:8000`
+
+- Send the request
+
+### Sending a request
+
+```
+curl -X POST http://localhost:8000/api/pipeline/get-subtitle/ \                                                                                    ✔
+     -H "Content-Type: application/json" \
+     -d '{"youtube_url": "https://youtu.be/xTY3kPmDrOM?si=F9bw7cyCFA-hyVCP"}'
+```
+
 Subtitle Shop Backend
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
