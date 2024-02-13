@@ -170,3 +170,7 @@ SPECTACULAR_SETTINGS["SERVERS"] = [  # noqa: F405
 ]
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",  # Add the URL of your frontend app here
+]
