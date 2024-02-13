@@ -13,5 +13,8 @@ app = Celery("subtitle_shop_backend")
 #   should have a `CELERY_` prefix.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
+# Use RabbitMQ as the broker
+app.conf.broker_url = "amqp://subtitle-shop:hurlingham@localhost/subtitle-shop"
+
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
