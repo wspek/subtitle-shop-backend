@@ -1,9 +1,13 @@
+import uuid
+
 import utils.aws as aws
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from download import download_audio
 from subtitle import Language, write_transcript_to_srt_file
 from transcribe import transcribe
+
+from .models import GeneratedSubtitle
 
 logger = get_task_logger(__name__)
 
@@ -25,6 +29,12 @@ def generate_subtitle_task(youtube_url, output_folder):
     with open(srt_file) as f:
         subtitles = f.read()
 
+    # Generate a unique task ID
+    task_id = str(uuid.uuid4())
+
+    # Save the subtitles with the task_id
+    GeneratedSubtitle.objects.create(task_id=task_id, subtitles=subtitles)
+
     logger.info("Subtitles generated successfully")
 
-    return subtitles
+    return task_id
