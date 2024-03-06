@@ -4,7 +4,7 @@ import utils.aws as aws
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from download import download_audio
-from subtitle import Language, write_transcript_to_srt_file
+from subtitle import Language, translate_srt, write_transcript_to_srt_file
 from transcribe import transcribe
 
 from .models import GeneratedSubtitle
@@ -36,5 +36,22 @@ def generate_subtitle_task(youtube_url, output_folder):
     GeneratedSubtitle.objects.create(task_id=task_id, subtitles=subtitles)
 
     logger.info("Subtitles generated successfully")
+
+    return task_id
+
+
+@shared_task
+def generate_subtitle_translation_task(source):
+    logger.info("Translating subtitle")
+
+    destination = translate_srt(source, src_lang=Language.ENGLISH, dst_lang=Language.SPANISH)
+
+    # Generate a unique task ID
+    task_id = str(uuid.uuid4())
+
+    # Save the subtitles with the task_id
+    GeneratedSubtitle.objects.create(task_id=task_id, subtitles=destination)
+
+    logger.info("Subtitle translated successfully")
 
     return task_id

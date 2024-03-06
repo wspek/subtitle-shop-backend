@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 from config.celery_app import app as celery_app
 
 from .models import GeneratedSubtitle
-from .serializers import GenerateSubtitleSerializer
-from .tasks import generate_subtitle_task
+from .serializers import GenerateSubtitleSerializer, GenerateTranslationSerializer
+from .tasks import generate_subtitle_task, generate_subtitle_translation_task
 
 
 class GenerateSubtitleAPIView(APIView):
@@ -25,6 +25,21 @@ class GenerateSubtitleAPIView(APIView):
             task = generate_subtitle_task.delay(youtube_url, output_folder)
 
             # Return the task ID to the client
+            return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenerateTranslationAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = GenerateTranslationSerializer(data=request.data)
+        if serializer.is_valid():
+            source_content = serializer.validated_data["source"]
+
+            task = generate_subtitle_translation_task.delay(source_content)
+
             return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
